@@ -53,3 +53,7 @@ export PYTHONPATH=$PYTHONPATH:./src && python3 -m pytest --cov=db
 Технические стандарты
 Type Hinting: Полная аннотация типов для методов и атрибутов классов.
 Clean Code: Соблюдение принципов единственной ответственности и стандартов PEP 8.
+Вобликов Сергей Витальевич
+М60-123БВ-25
+Python
+ssh://git@gitlab.mai.ru:2222/SVVoblikov/pioa_task1.git
