@@ -7,6 +7,22 @@ class StudentDatabase:
     def __init__(self):
         self._students: list[StudentRecord] = []
 
+    def sort_records(self, field: str, reverse: bool = False) -> list[StudentRecord]:
+        mapping = {
+            'id': 0,
+            'first_name': 1,
+            'second_name': 2,
+            'age': 3,
+            'sex': 4
+        }
+
+        if field not in mapping:
+            raise ValueError(f"Недопустимое поле для сортировки: '{field}'. Доступные поля: {list(mapping.keys())}")
+
+        index = mapping[field]
+
+        return sorted(self._students, key=lambda record: record[index], reverse=reverse)
+
     def create_record(self, student_id: int, first_name: str,
                       second_name: str, age: int, sex: str) -> StudentRecord:
         if age < 0:

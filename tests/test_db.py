@@ -51,3 +51,34 @@ def test_select_empty_result(db):
     db.create_record(1, "Ivan", "Ivanov", 20, "m")
     results = db.select_record(student_id=999)
     assert len(results) == 0
+
+def test_sort_records_by_numeric_fields(db):
+    """Тест сортировки по числовым полям (id, age)."""
+    db.create_record(3, "Ivan", "Ivanov", 25, "m")
+    db.create_record(1, "Petr", "Petrov", 19, "m")
+    db.create_record(2, "Anna", "Sidorova", 22, "f")
+
+    res_id_asc = db.sort_records("id")
+    assert res_id_asc[0][0] == 1
+    assert res_id_asc[2][0] == 3
+
+    res_age_desc = db.sort_records("age", reverse=True)
+    assert res_age_desc[0][3] == 25  # Сначала 25 лет
+    assert res_age_desc[2][3] == 19  # В конце 19 лет
+
+
+def test_sort_records_by_string_fields(db):
+    db.create_record(1, "Boris", "Zaitsev", 20, "m")
+    db.create_record(2, "Anton", "Alenin", 21, "m")
+
+    res_name = db.sort_records("first_name")
+    assert res_name[0][1] == "Anton"
+
+    res_surname = db.sort_records("second_name", reverse=True)
+    assert res_surname[0][2] == "Zaitsev"
+
+
+def test_sort_records_invalid_field_raises_error(db):
+    db.create_record(1, "Ivan", "Ivanov", 20, "m")
+    with pytest.raises(ValueError, match="Недопустимое поле для сортировки"):
+        db.sort_records("unexisting_field")
