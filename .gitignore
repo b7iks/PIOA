@@ -3,3 +3,8 @@
 /workspace.xml
 # Editor-based HTTP Client requests
 /httpRequests/
+.idea/
+.coverage
+__pycache__/
+.pytest_cache/
+.ruff_cache/
