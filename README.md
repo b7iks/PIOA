@@ -12,13 +12,14 @@ PIOA-123BV-25/
 │   └── db/
 │       ├── backend/
 │       │   ├── __init__.py
-│       │   └── memory.py      # Реализация СУБД: BaseStudentDatabase, JsonStudentDatabase, CsvStudentDatabase
-│       ├── __init__.py
-│       ├── __main__.py        # Точка входа: интерактивный выбор типа хранилища при старте
-│       └── tui.py             # Класс StudentTUI: универсальный консольный интерфейс
-├── test_db.py                 # Набор автоматизированных тестов для всех типов СУБД
-├── README.md                  # Документация проекта
-└── .gitignore                 # Исключение временных файлов (*.json, *.csv, .idea)
+│       │   └── memory.py      # Класс StudentDatabase с гибким механизмом индексов
+│       ├── __main__.py        # Конфигурация запуска СУБД
+│       └── tui.py             # Класс StudentTUI с защитой ввода
+├── tests/
+│   └── test_db.py             # Вынесенные автотесты модулей (pytest)
+├── README.md                  # Исправленная документация
+└── .gitignore                 # Исключение локальных артефактов
+
 ```
 
 ## 🛠 Реализованные хранилища (Task 4)

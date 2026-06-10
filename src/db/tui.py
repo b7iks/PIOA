@@ -2,14 +2,10 @@ from db.backend.memory import DatabaseError
 
 
 class StudentTUI:
-    """Класс текстового пользовательского интерфейса СУБД."""
-
     def __init__(self, db):
-        """Инициализация TUI с внедрением зависимости объекта базы данных."""
         self.db = db
 
     def _print_menu(self) -> None:
-        """Вывод главного меню в консоль."""
         print("\n=== База студентов (ООП) ===")
         print("1. Добавить запись")
         print("2. Показать все записи")
@@ -18,7 +14,6 @@ class StudentTUI:
         print("0. Выход")
 
     def _read_int(self, prompt: str) -> int:
-        """Безопасное чтение целого числа из консоли."""
         while True:
             try:
                 return int(input(prompt).strip())
@@ -26,7 +21,6 @@ class StudentTUI:
                 print("Ошибка: введите целое число.")
 
     def _add_student(self) -> None:
-        """Интерфейс добавления нового студента."""
         print("\n--- Добавление новой записи ---")
         try:
             res = self.db.create_record(
@@ -40,15 +34,21 @@ class StudentTUI:
         except ValueError as e:
             print(f"Ошибка валидации: {e}")
         except DatabaseError as e:
-            print(f"Критическая ошибка базы данных при сохранении: {e}")
+            print(f"Системная ошибка СУБД при сохранении: {e}")
 
     def _find_students(self) -> None:
-        """Интерфейс поиска студентов по фильтрам."""
         print("\n--- Поиск по фильтру (Enter — пропустить поле) ---")
 
-        def read_opt_int(prompt):
-            raw = input(prompt).strip()
-            return int(raw) if raw else None
+        # Точечная обработка ValueError для фильтрации (Замечание ревью)
+        def read_opt_int(prompt: str) -> Optional[int]:
+            while True:
+                raw = input(prompt).strip()
+                if not raw:
+                    return None
+                try:
+                    return int(raw)
+                except ValueError:
+                    print("Ошибка ввода: требуется целое число. Повторите попытку.")
 
         sid = read_opt_int("id: ")
         fn = input("Имя: ").strip() or None
@@ -58,19 +58,17 @@ class StudentTUI:
 
         try:
             results = self.db.select_record(
-                student_id=sid, first_name=fn, second_name=sn, age=age, sex=sex
+                id=sid, first_name=fn, second_name=sn, age=age, sex=sex
             )
             self._print_records(results)
         except DatabaseError as e:
-            print(f"Критическая ошибка базы данных при чтении: {e}")
+            print(f"Системная ошибка СУБД при чтении: {e}")
 
     def _sort_students(self) -> None:
-        """Интерфейс сортировки записей по выбранному полю."""
         print("\n--- Сортировка записей ---")
-        field = input("Введите поле для сортировки (id, first_name, second_name, age, sex): ").strip().lower()
+        field = input("Введите поле для сортировки (id, first_name, second_name, age, sex): ").strip()
         print("Выберите порядок:")
-        print("1. По возрастанию (А-Я, 0-9)")
-        print("2. По убыванию (Я-А, 9-0)")
+        print("1. По возрастанию\n2. По убыванию")
         order = input("Ваш выбор: ").strip()
 
         reverse = True if order == "2" else False
@@ -80,12 +78,11 @@ class StudentTUI:
             print(f"\nРезультат сортировки по полю '{field}':")
             self._print_records(sorted_data)
         except ValueError as e:
-            print(f"Ошибка: {e}")
+            print(f"Ошибка параметров: {e}")
         except DatabaseError as e:
-            print(f"Критическая ошибка базы данных при обработке данных: {e}")
+            print(f"Системная ошибка СУБД при обработке: {e}")
 
     def _print_records(self, records: list) -> None:
-        """Вспомогательный метод вывода списка записей."""
         if not records:
             print("Записи не найдены.")
             return
@@ -93,12 +90,10 @@ class StudentTUI:
             print(record)
 
     def run(self) -> None:
-        """Основной цикл обработки команд пользователя."""
         while True:
             try:
                 self._print_menu()
                 action = input("Выберите действие: ").strip()
-
                 if action == "1":
                     self._add_student()
                 elif action == "2":
@@ -109,11 +104,9 @@ class StudentTUI:
                 elif action == "4":
                     self._sort_students()
                 elif action == "0":
-                    print("Выход из программы. Пока!")
+                    print("Выход из программы.")
                     break
                 else:
                     print("Неизвестная команда. Повторите ввод.")
-            except DatabaseError as e:
-                print(f"Общая ошибка СУБД: {e}")
             except Exception as e:
-                print(f"Непредвиденная системная ошибка приложения: {e}")
+                print(f"Непредвиденный сбой приложения: {e}")
